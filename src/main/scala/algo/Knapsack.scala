@@ -1,12 +1,13 @@
 package main.scala.algo
 
 import scala.collection.immutable.Set
+import scala.collection.mutable.BitSet
 
 class Knapsack(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)
-  val items = Utils.mapi(body filter(!_.isEmpty), (i, el: String) => (i + 1, Utils.toTwoInts(el)))
+  val items = Utils.mapi(body filter(!_.isEmpty), (i, el: String) => (i, Utils.toTwoInts(el)))
 
-  def solve() {
+  def solveWithImplicitBacktracking() {
     def loop(prevSln: Array[(Int, List[Int])], items: List[(Int, (Int, Int))]): Array[(Int, List[Int])] = items match {
       case (n, (v, w)) :: tl =>
         val nextSln = Array.ofDim[(Int, List[Int])](k + 1)
@@ -22,47 +23,57 @@ class Knapsack(header: String, body: List[String]) {
     val (_, selectedItems) = loop(initialSolution, items)(k)
     val set = Set() ++ selectedItems
     val values = items map (i => (i._1, i._2._1)) toMap
+    val weights = items map (i => (i._1, i._2._2)) toMap
     val selectedValue = selectedItems map (values(_)) sum
     val selectedIndicators = for (i <- 0 until n) yield if (set.contains(i)) "1" else "0"
 
     println("" + selectedValue + " 0")
     println(selectedIndicators mkString " ")
+
+    Log.writeLine(set.toList.sorted map (i => "" + i + "=" ) mkString (" "))
   }
 
-  def solveNoBacktrack() {
-    def loop(prevSln: Array[Int], items: List[(Int, (Int, Int))], bp: Map[Int, Int]): (Array[Int], Map[Int, Int]) = items match {
+  def solveWithExplicitBacktracking() {
+    Log.writeLine("Solving " + n + ":" + k)
+
+    val bp = Array.fill(n)(BitSet.empty)
+
+    def loop(prevSln: Array[Int], nextSln: Array[Int], items: List[(Int, (Int, Int))]): (Array[Int]) = items match {
       case (n, (v, w)) :: tl =>
-        //println("processing " + n)
-        val nextSln = Array.ofDim[Int](k + 1)
-        var nextBp = bp
+        Log.writeLine("-> starting iteration " + (n + 1))
+        //val nextSln = Array.ofDim[Int](k + 1)
         for (i <- 0 to k) {
           if (i < w || prevSln(i) >= (v + prevSln(i - w))) nextSln(i) = prevSln(i)
           else {
             nextSln(i) = v + prevSln(i - w)
-            nextBp = nextBp + (nextSln(i) -> n)
+            bp(n).add(i)
           }
         }
-        loop(nextSln, tl, nextBp)
-      case _ => (prevSln, bp)
+
+        Log.writeLine("<- done")
+
+        loop(nextSln, prevSln, tl)
+
+      case _ => prevSln
     }
 
-    val initialSolution = Array.fill(k + 1)(0)
-    val (sln, bp) = loop(initialSolution, items, Map())
+    loop(Array.fill(k + 1)(0), Array.fill(k + 1)(0), items)
+
     val values = items map (i => (i._1, i._2._1)) toMap
     val weights = items map (i => (i._1, i._2._2)) toMap
-    val bestSln = sln(k)
-    def backtrack(sln: Int): List[Int] =
-      if (sln == 0) List()
-      else {
-        val selectedItem = bp(sln)
-        selectedItem :: backtrack(sln - weights(selectedItem))
-      }
-    val selectedItems = backtrack(bestSln)
-    var set = Set() ++ selectedItems
-    val selectedValue = selectedItems map (values(_)) sum
-    val selectedIndicators = for (i <- 0 until n) yield if (set.contains(i)) "1" else "0"
 
-    println("" + selectedValue + " 0")
+    def backtrack(n: Int, k: Int): Set[Int] =
+      if (n < 0 || k == 0) Set()
+      else {
+        if (bp(n).contains(k)) backtrack(n - 1, k - weights(n)) + n
+        else backtrack(n - 1, k)
+      }
+
+    val selectedItems = backtrack(n - 1, k)
+    val selectedValue = selectedItems map (values(_)) sum
+    val selectedIndicators = for (i <- 0 until n) yield if (selectedItems.contains(i)) "1" else "0"
+
+    println("" + selectedValue + " 1")
     println(selectedIndicators mkString " ")
   }
 }

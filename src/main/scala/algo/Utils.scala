@@ -1,6 +1,6 @@
 package main.scala.algo
 
-import org.scalacheck.Gen.value
+import java.io.File
 
 object Utils {
   def toTwoInts(s: String): (Int, Int) = {
@@ -14,5 +14,15 @@ object Utils {
       i = i + 1
       f (i - 1, el)
     }) toList
+  }
+
+  def writeToFile(fileName: String)(op: java.io.PrintWriter => Unit) {
+    val file = new File(fileName)
+    val p = new java.io.PrintWriter(file)
+    try {
+      op(p)
+    } finally {
+      p.close()
+    }
   }
 }

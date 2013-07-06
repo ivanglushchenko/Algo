@@ -30,6 +30,7 @@ local.properties
 
 .idea/
 out/
+tmp/
 project/
 target/
 

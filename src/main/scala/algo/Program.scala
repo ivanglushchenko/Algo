@@ -4,7 +4,7 @@ object Program extends App {
   val filename = args.head
   val source = scala.io.Source.fromFile(filename).getLines().toList
   val knapsack = new Knapsack(source.head, source.tail)
-  knapsack.solve()
+  knapsack.solveWithExplicitBacktracking()
   //knapsack.solveNoBacktrack()
 
 /*
