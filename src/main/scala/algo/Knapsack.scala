@@ -6,6 +6,8 @@ import scala.collection.mutable.BitSet
 class Knapsack(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)
   val items = Utils.mapi(body filter(!_.isEmpty), (i, el: String) => (i, Utils.toTwoInts(el)))
+  val values = items map (i => (i._1, i._2._1)) toMap
+  val weights = items map (i => (i._1, i._2._2)) toMap
 
   def solveWithImplicitBacktracking() {
     def loop(prevSln: Array[(Int, List[Int])], items: List[(Int, (Int, Int))]): Array[(Int, List[Int])] = items match {
@@ -22,8 +24,6 @@ class Knapsack(header: String, body: List[String]) {
     val initialSolution = Array.fill(k + 1)(0, List[Int]())
     val (_, selectedItems) = loop(initialSolution, items)(k)
     val set = Set() ++ selectedItems
-    val values = items map (i => (i._1, i._2._1)) toMap
-    val weights = items map (i => (i._1, i._2._2)) toMap
     val selectedValue = selectedItems map (values(_)) sum
     val selectedIndicators = for (i <- 0 until n) yield if (set.contains(i)) "1" else "0"
 
@@ -41,7 +41,7 @@ class Knapsack(header: String, body: List[String]) {
     def loop(prevSln: Array[Int], nextSln: Array[Int], items: List[(Int, (Int, Int))]): (Array[Int]) = items match {
       case (n, (v, w)) :: tl =>
         Log.writeLine("-> starting iteration " + (n + 1))
-        //val nextSln = Array.ofDim[Int](k + 1)
+
         for (i <- 0 to k) {
           if (i < w || prevSln(i) >= (v + prevSln(i - w))) nextSln(i) = prevSln(i)
           else {
@@ -58,9 +58,6 @@ class Knapsack(header: String, body: List[String]) {
     }
 
     loop(Array.fill(k + 1)(0), Array.fill(k + 1)(0), items)
-
-    val values = items map (i => (i._1, i._2._1)) toMap
-    val weights = items map (i => (i._1, i._2._2)) toMap
 
     def backtrack(n: Int, k: Int): Set[Int] =
       if (n < 0 || k == 0) Set()
