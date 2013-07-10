@@ -4,7 +4,7 @@ import scala.collection.immutable.BitSet
 
 class GraphColoring(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)
-  val M = 100
+  val M = n / 2
   val edges = body filter(!_.isEmpty) map (Utils.toTwoInts(_)) flatMap (t => List((t._1, t._2), (t._2, t._1)))
   val edgeMap = edges groupBy (t => t._1) map (t => (t._1, (t._2 map (_._2)).toSet))
 

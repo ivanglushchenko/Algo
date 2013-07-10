@@ -5,8 +5,8 @@ object Program extends App {
 
   val filename = args.head
   val source = scala.io.Source.fromFile(filename).getLines().toList
-  val coloring = new GraphColoring(source.head, source.tail)
+  val tsp = new TravelingSalesman(source.head, source.tail)
   Stopwatch.measure("solve") {
-    coloring.solve()
+    tsp.solve()
   }
 }

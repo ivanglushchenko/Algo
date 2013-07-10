@@ -8,6 +8,11 @@ object Utils {
     (parts.head.toInt, parts.tail.head.toInt)
   }
 
+  def toTwoDoubles(s: String): (Double, Double) = {
+    val parts = (s split ' ' filterNot  (_.isEmpty))
+    (parts.head.toDouble, parts.tail.head.toDouble)
+  }
+
   def mapi[T, U](list: List[T], f: (Int, T) => U): List[U] = {
     var i = 0
     (for (el <- list) yield {
