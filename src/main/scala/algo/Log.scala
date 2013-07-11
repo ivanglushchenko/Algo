@@ -14,11 +14,19 @@ object Log {
   }
 
   def writeLine(message: String, isEnabled: Boolean) {
+    write(message + "\n\r", isEnabled)
+  }
+
+  def write(message: String) {
+    write(message, true)
+  }
+
+  def write(message: String, isEnabled: Boolean) {
     if (isEnabled){
       val today = Calendar.getInstance().getTime()
       val prompt = new SimpleDateFormat("HH").format(today) + ":" + new SimpleDateFormat("mm").format(today) + ":" + new SimpleDateFormat("ss").format(today)
 
-      writer.write(prompt + "  " + message + "\n\r")
+      writer.write(prompt + "  " + message)
       writer.flush()
     }
   }

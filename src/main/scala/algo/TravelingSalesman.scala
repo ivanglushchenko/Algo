@@ -1,7 +1,7 @@
 package main.scala.algo
 
 import scala.util.Random
-import scala.collection.mutable.{Set => MSet}
+import scala.collection.mutable.{Set => MSet, Map => MMap}
 
 class TravelingSalesman(header: String, body: List[String]) {
   val n = header.toInt
@@ -46,24 +46,42 @@ class TravelingSalesman(header: String, body: List[String]) {
       }
     }
 
-  def getRandomSln() = rnd.shuffle(List.range(0, n))
+  def validateSln(sln: Array[Int]) = (Set() ++ sln).size == n
 
-  def getInitialClosestNeighbour(): Array[Int] =
-    (List.range(0, n) map (i => getInitialClosestNeighbour(i)) map (t => (t, length(t))) sortBy(_._2)).head._1
+  def getRandomSln = rnd.shuffle(List.range(0, n))
+
+  val closestNeighbours = MMap.empty[Int, List[Int]]
+
+  def getClosestNeighbour(i: Int, restrictedVertices: MSet[Int]): Int = {
+    def getAllNeighbours = (for (j <- 0 until n; if j != i) yield (j, calcDist(i, j))) sortBy (_._2) map (_._1)
+
+    if (closestNeighbours contains i) {
+      val allowedNeighbours = closestNeighbours(i) filter (!restrictedVertices.contains(_))
+      if (allowedNeighbours.isEmpty) (getAllNeighbours filter (!restrictedVertices.contains(_))).head
+      else allowedNeighbours.head
+    } else {
+      val neighbours = getAllNeighbours
+      closestNeighbours += (i -> (neighbours take 2).toList)
+      (neighbours filter (!restrictedVertices.contains(_))).head
+    }
+  }
+
+  def getInitialClosestNeighbour(): Array[Int] = (List.range(0, n) map (i => getInitialClosestNeighbour(i)) sortBy(_._2)).head._1
 
   def getInitialClosestNeighbour(startingPoint: Int) = {
-    Log.writeLine("in getInitialClosestNeighbour " + startingPoint)
+    Log.write("in getInitialClosestNeighbour " + startingPoint + "...")
 
     val sln = Array.fill(n)(0)
     sln(0) = startingPoint
     val visited = MSet(startingPoint)
     for (prevItem <- 0 until n - 1) {
-      val neighbours = (coordinates filter (t => !visited.contains(t._1)) map (t => (t._1, calcDist(t._1, sln(prevItem))))).toArray
-      val closest = neighbours.sortBy(_._2).head._1
+      val closest = getClosestNeighbour(sln(prevItem), visited)
       sln(prevItem + 1) = closest
       visited add closest
     }
-    sln
+    val l = length(sln)
+    Log.writeLine("" + l)
+    (sln, l)
   }
 
   def greedyClosestNeighbour(sln: Array[Int]) = {
@@ -120,7 +138,7 @@ class TravelingSalesman(header: String, body: List[String]) {
     var currentLength = length(sln)
     var iteration = 0
 
-    while (iteration < 30) {
+    while (iteration < 10) {
       Log.writeLine("2opt: i = " + iteration + ", currentLength = " + currentLength)
 
       val edges = ((for (from <- 0 until n; to = (from + 1) % n; d = calcDist(sln(from), sln(to))) yield (d, (from, to))) sortBy (-_._1) map (_._2)).toArray
@@ -154,12 +172,6 @@ class TravelingSalesman(header: String, body: List[String]) {
     for (fc <- crosses) {
       Log.writeLine("   " + sln(fc._1._1) + "->" + sln(fc._1._2) + " crosses " + sln(fc._2._1) + "->" + sln(fc._2._2))
     }
-
-    //val lastCross = crosses.tail.tail.tail.head
-    //Log.writeLine("bf: " + (sln mkString(" -> ")))
-    //swap2Opt(sln, math.min(lastCross._1._1, lastCross._2._1), math.max(lastCross._1._1, lastCross._2._1))
-    //Log.writeLine("af: " + (sln mkString(" -> ")))
-
     sln
   }
 
@@ -174,8 +186,14 @@ class TravelingSalesman(header: String, body: List[String]) {
     sln
   }
 
+  def readFromFile() = {
+    val lines = scala.io.Source.fromFile("s:\\Sources\\Algo\\tmp\\tsp_opt\\p3").getLines().toList
+    lines.tail.map(Utils.toTwoInts(_)).map(_._1).toArray
+  }
+
   def solve() {
-    val sln = apply2opt(getInitialClosestNeighbour()) // apply2opt(straigthtenPath(greedyClosestNeighbour(Array.range(0, n))))
+    val sln = readFromFile() //apply2opt(getInitialClosestNeighbour()) // apply2opt(straigthtenPath(greedyClosestNeighbour(Array.range(0, n))))
+    if (!validateSln(sln)) println("sln is broken")
     val slnValue = length(sln.toList)
     Log.writeLine("solution: " + slnValue)
     println("" + slnValue + " 0")
