@@ -187,7 +187,7 @@ class TravelingSalesman(header: String, body: List[String]) {
   }
 
   def readFromFile() = {
-    val lines = scala.io.Source.fromFile("s:\\Sources\\Algo\\tmp\\tsp_opt\\p3").getLines().toList
+    val lines = scala.io.Source.fromFile("s:\\Sources\\Algo\\tmp\\tsp_opt\\p6").getLines().toList
     lines.tail.map(Utils.toTwoInts(_)).map(_._1).toArray
   }
 
