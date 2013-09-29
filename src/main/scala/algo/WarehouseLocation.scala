@@ -4,11 +4,12 @@ import scala.collection.mutable.{ Map => MMap }
 
 class WarehouseLocation(header: String, body: List[String]) {
   val (n, m) = Utils.toTwoInts(header)
-  val w  = Utils.mapi(body take n, (i, el: String) => (i, Utils.toTwoDoubles(el)))
+  //val w  = Utils.mapi(body take n, (i, el: String) => (i, Utils.toTwoDoubles(el)))
+  val w  = Utils.mapi(body take n)((i, el) => (i, Utils.toTwoDoubles(el)))
   def getCustomer(i: Int, xs: List[String]): List[(Int, Int, Map[Int, Double])] = xs match {
     case hd :: nk :: tl =>
       var distances = (nk split " " map (_.toDouble)).toList
-      val dMap = Utils.mapi(distances, (i, el: Double) => (i, el)).toMap
+      val dMap = Utils.mapi(distances)((i, el) => (i, el)).toMap
       (i, hd.toInt, dMap) :: getCustomer(i + 1, tl)
     case _ => List()
   }
@@ -16,7 +17,7 @@ class WarehouseLocation(header: String, body: List[String]) {
 
   def cost(sln: Array[Int]) = {
     val wc = (sln.toSet.toList map ((t: Int) => w(t)._2._2)).sum
-    val cc = Utils.mapi(sln.toList, (i, t: Int) => c(i)._3(t)).sum
+    val cc = Utils.mapi(sln.toList)((i, t) => c(i)._3(t)).sum
 
     wc + cc
   }

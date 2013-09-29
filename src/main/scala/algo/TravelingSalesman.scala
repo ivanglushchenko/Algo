@@ -5,7 +5,7 @@ import scala.collection.mutable.{Set => MSet, Map => MMap}
 
 class TravelingSalesman(header: String, body: List[String]) {
   val n = header.toInt
-  val coordinates = Utils.mapi(body filter(!_.isEmpty), (i, el: String) => (i, Utils.toTwoDoubles(el))).toMap
+  val coordinates = Utils.mapi(body filter(!_.isEmpty))((i, el) => (i, Utils.toTwoDoubles(el))).toMap
   def calcDist(i: Int, j: Int) = math.sqrt(math.pow(coordinates(i)._1 - coordinates(j)._1, 2) + math.pow(coordinates(i)._2 - coordinates(j)._2, 2))
 
   val rnd = new Random(2)

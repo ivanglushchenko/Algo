@@ -5,7 +5,7 @@ import scala.collection.mutable.BitSet
 
 class Knapsack(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)
-  val items = Utils.mapi(body filter(!_.isEmpty), (i, el: String) => (i, Utils.toTwoInts(el)))
+  val items = Utils.mapi(body filter(!_.isEmpty))((i, el) => (i, Utils.toTwoInts(el)))
   val values = items map (i => (i._1, i._2._1)) toMap
   val weights = items map (i => (i._1, i._2._2)) toMap
 
