@@ -1,6 +1,7 @@
-package main.scala.algo
+package main.scala.algo.discreteoptimizations
 
 import scala.collection.mutable.{ Map => MMap }
+import main.scala.algo.Utils
 
 class WarehouseLocation(header: String, body: List[String]) {
   val (n, m) = Utils.toTwoInts(header)

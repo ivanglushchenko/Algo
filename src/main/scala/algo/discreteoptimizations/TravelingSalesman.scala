@@ -1,7 +1,8 @@
-package main.scala.algo
+package main.scala.algo.discreteoptimizations
 
 import scala.util.Random
 import scala.collection.mutable.{Set => MSet, Map => MMap}
+import main.scala.algo.{Log, Utils}
 
 class TravelingSalesman(header: String, body: List[String]) {
   val n = header.toInt

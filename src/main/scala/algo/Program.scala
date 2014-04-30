@@ -1,6 +1,6 @@
 package main.scala.algo
 
-import main.scala.algo.mindgames.Puzzle2
+import main.scala.algo.mindgames.puzzle4.Puzzle4
 
 object Program extends App {
   val isProd = false
@@ -13,5 +13,5 @@ object Program extends App {
     //solver.solve()
   }
 
-  new Puzzle2().solve()
+  new Puzzle4().solve()
 }

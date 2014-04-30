@@ -1,7 +1,8 @@
-package main.scala.algo
+package main.scala.algo.discreteoptimizations
 
 import scala.collection.immutable.Set
 import scala.collection.mutable.BitSet
+import main.scala.algo.{Log, Utils}
 
 class Knapsack(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)

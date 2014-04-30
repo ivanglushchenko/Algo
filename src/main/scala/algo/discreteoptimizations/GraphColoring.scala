@@ -1,7 +1,8 @@
-package main.scala.algo
+package main.scala.algo.discreteoptimizations
 
 import scala.collection.immutable.BitSet
 import scala.util.Random
+import main.scala.algo.{Log, Utils}
 
 class GraphColoring(header: String, body: List[String]) {
   val (n, k) = Utils.toTwoInts(header)

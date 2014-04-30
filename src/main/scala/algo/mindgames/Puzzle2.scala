@@ -1,4 +1,4 @@
-package main.scala.algo.mindgames
+package main.scala.algo.mindgames.puzzle2
 
 /**
  * Created with IntelliJ IDEA.
